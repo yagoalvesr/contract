@@ -1,0 +1,24 @@
+version: "3"
+
+services:
+  postgres:
+    image: "postgres:11"
+    container_name: "postgres_contract"
+    ports:
+      - "54320:5432"
+    environment:
+      POSTGRES_USER: yago
+      POSTGRES_PASSWORD: yago
+      POSTGRES_DB: contract
+
+  rabbit:
+    container_name: "rabbit_contract"
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 30

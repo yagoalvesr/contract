@@ -1,0 +1,57 @@
+server:
+  port: 8080
+spring:
+  application:
+    display-name: Contract Service
+  rabbitmq:
+    addresses: localhost:5672
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 0B
+      max-file-size: 20MB
+      max-request-size: 25MB
+  cloud:
+    stream:
+      bindings:
+        contract-service-user-create-input:
+          contentType: application/json
+          destination: contract.output
+          group: user.create
+      rabbit:
+        bindings:
+          contract-service-user-create-input:
+            consumer:
+              transacted: true
+              auto-bind-dlq: true
+              republish-to-dlq: true
+              binding-routing-key: "user.create"
+              maxConcurrency: 20
+  flyway:
+    schemas: public
+  datasource:
+    hikari:
+      connectionTimeout: 20000
+      idleTimeout: 20000
+      maxLifetime: 60000
+      maximum-pool-size: 10
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:54320/contract
+    username: yago
+    password: yago
+  jpa:
+    hibernate:
+      show-sql: false
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        show_sql: false
+        format_sql: true
+
+logging:
+  level:
+    root: INFO
+    com.yago.contract: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
